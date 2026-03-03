@@ -1,0 +1,5 @@
+{
+  "name": "ARC View",
+  "description": "Generate 33 distinct architectural photography angles from a single reference image using Gemini AI.",
+  "requestFramePermissions": []
+}
