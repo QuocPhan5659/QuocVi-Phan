@@ -1,5 +1,5 @@
 {
-  "name": "ARC View",
-  "description": "Generate 33 distinct architectural photography angles from a single reference image using Gemini AI.",
+  "name": "AssetHub",
+  "description": "A professional asset management platform for uploading and organizing image and text files.",
   "requestFramePermissions": []
 }

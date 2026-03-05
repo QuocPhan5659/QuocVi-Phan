@@ -1,36 +1,24 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { defineConfig, loadEnv } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
+import {defineConfig, loadEnv} from 'vite';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export default defineConfig(({ mode }) => {
-    // Load env file based on `mode` in the current working directory.
-    // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
-    const env = loadEnv(mode, path.resolve(), '');
-    
-    // Resolve API Key: Check API_KEY first (standard), then GEMINI_API_KEY
-    const apiKey = env.API_KEY || env.GEMINI_API_KEY;
-
-    return {
-        base: '/QuocVi-Phan/',
-      server: {
-        port: 3000,
-        host: '0.0.0.0',
+export default defineConfig(({mode}) => {
+  const env = loadEnv(mode, '.', '');
+  return {
+    plugins: [react(), tailwindcss()],
+    define: {
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+    },
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, '.'),
       },
-      plugins: [react()],
-      define: {
-        // Inject the resolved key into process.env.API_KEY for the app to use
-        'process.env.API_KEY': JSON.stringify(apiKey),
-        // Keep strictly for compatibility if referenced directly elsewhere (optional)
-        'process.env.GEMINI_API_KEY': JSON.stringify(apiKey)
-      },
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, '.'),
-        }
-      }
-    };
+    },
+    server: {
+      // HMR is disabled in AI Studio via DISABLE_HMR env var.
+      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+      hmr: process.env.DISABLE_HMR !== 'true',
+    },
+  };
 });
