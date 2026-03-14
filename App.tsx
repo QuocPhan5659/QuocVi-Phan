@@ -22,7 +22,7 @@ declare global {
 const App: React.FC = () => {
   const [sourceImages, setSourceImages] = useState<string[]>([]);
   const [resolution, setResolution] = useState<Resolution>('1K');
-  const [selectedModel, setSelectedModel] = useState<ModelType>('fast');
+  const [selectedModel, setSelectedModel] = useState<ModelType>('gemini-3-pro');
   const [customViews, setCustomViews] = useState<ViewDefinition[]>([]);
   const [useMasterLighting, setUseMasterLighting] = useState(false);
   
@@ -73,12 +73,6 @@ const App: React.FC = () => {
   const checkApiKey = async (isPaidModel: boolean) => {
     // If user has provided a manual key, use it
     if (userApiKey) return true;
-
-    // Fallback to platform key if available
-    if (window.aistudio) {
-      const hasKey = await window.aistudio.hasSelectedApiKey();
-      if (hasKey) return true;
-    }
 
     // If it's a paid model and no key is found, return false to trigger fallback
     if (isPaidModel) return false;
@@ -241,7 +235,7 @@ const App: React.FC = () => {
     cancelRefs.current[viewId] = false;
     setIsStopping(prev => ({ ...prev, [viewId]: false }));
 
-    const isPaidModel = selectedModel === '3.1' || selectedModel === '3.2' || selectedModel === 'pro' || selectedModel === 'fast';
+    const isPaidModel = selectedModel === 'gemini-3-pro' || selectedModel === 'fast';
     const hasKey = await checkApiKey(isPaidModel);
     
     let modelToUse = selectedModel;
@@ -330,6 +324,71 @@ const App: React.FC = () => {
 
             // Small delay between requests to be extra safe
             if (index < subPrompts.length - 1) {
+              await new Promise(r => setTimeout(r, 10000));
+            }
+          } catch (err: any) {
+            console.error(`Failed to generate sub-view ${index}`, err);
+            if (!firstError) firstError = err;
+          }
+        }
+        
+        if (cancelRefs.current[viewId]) return;
+
+        if (validResults.length > 0) {
+          // Create a collage from the 5 images for the main result
+          const collageUrl = await handleCreateCollage(validResults.length === 5 ? validResults : [...validResults, ...Array(5 - validResults.length).fill(validResults[0])]);
+          
+          if (cancelRefs.current[viewId]) return;
+
+          setGenerations(prev => ({
+            ...prev,
+            [viewId]: { ...prev[viewId], status: 'success', imageUrl: collageUrl }
+          }));
+        } else {
+          setGenerations(prev => ({
+            ...prev,
+            [viewId]: { ...prev[viewId], status: 'error', error: firstError?.message || 'Generation failed' }
+          }));
+        }
+        return;
+
+        /*
+        for (let index = 0; index < subPrompts.length; index++) {
+          const subPrompt = subPrompts[index];
+          try {
+            if (cancelRefs.current[viewId]) break;
+
+            // If user selected specific angles, try to use them for the slots
+            // Otherwise fallback to the default sub-prompts
+            let slotPrompt = subPrompt;
+            if (selectedAngles.length > 0) {
+              // Use the selected angle for this slot if available, otherwise fallback
+              slotPrompt = selectedAngles[index % selectedAngles.length];
+            }
+
+            const url = await generateArchitecturalView(
+              imagesToUse,
+              `${slotPrompt}${customPrompt && !selectedAngles.includes(slotPrompt) ? `\n\nADDITIONAL USER REQUIREMENTS: ${customPrompt}` : ''}`,
+              resolution,
+              aspectRatio,
+              analysis?.english || undefined,
+              undefined, // Don't pass customPrompt again as it's included in the main prompt string
+              useMasterLighting,
+              userApiKey,
+              modelToUse
+            );
+            
+            if (cancelRefs.current[viewId]) break;
+
+            setExtractedViews(prev => {
+              const current = [...(prev[viewId] || [undefined, undefined, undefined, undefined, undefined])];
+              current[index] = url;
+              return { ...prev, [viewId]: current };
+            });
+            validResults.push(url);
+
+            // Small delay between requests to be extra safe
+            if (index < subPrompts.length - 1) {
               await new Promise(r => setTimeout(r, 3000));
             }
           } catch (err: any) {
@@ -337,6 +396,7 @@ const App: React.FC = () => {
             if (!firstError) firstError = err;
           }
         }
+        */
         
         if (cancelRefs.current[viewId]) return;
 
@@ -398,7 +458,7 @@ const App: React.FC = () => {
     if (sourceImages.length === 0) return;
     
     // We don't block here as handleGenerate handles individual view fallbacks
-    const isPaidModel = selectedModel === '3.1' || selectedModel === '3.2' || selectedModel === 'pro' || selectedModel === 'fast';
+    const isPaidModel = selectedModel === 'gemini-3-pro' || selectedModel === 'fast';
     await checkApiKey(isPaidModel);
 
     const allViews = [...VIEWS, ...SPECIAL_VIEWS, ...customViews];
@@ -427,7 +487,7 @@ const App: React.FC = () => {
       }
       
       if (view !== viewsToGenerate[viewsToGenerate.length - 1]) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 5000));
       }
     }
 
@@ -620,12 +680,9 @@ const App: React.FC = () => {
                       onChange={(e) => setSelectedModel(e.target.value as ModelType)}
                       className={`appearance-none pl-8 pr-8 py-1.5 text-[11px] font-bold rounded-full border transition-all cursor-pointer focus:outline-none focus:ring-1 focus:ring-purple-500/50 ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-purple-400 hover:bg-gray-700' : 'bg-white border-gray-200 text-purple-600 hover:bg-gray-50'}`}
                     >
-                      <option value="2.5">2.5</option>
-                      <option value="3.1">3.1</option>
-                      <option value="3.2">3.2</option>
+                      <option value="gemini-3-pro">Gemini 3 Pro</option>
                       <option value="banana-free">Banana Free</option>
                       <option value="fast">Fast</option>
-                      <option value="pro">Pro</option>
                     </select>
                     <div className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-purple-500">
                       <Sparkles size={12} />
@@ -664,6 +721,7 @@ const App: React.FC = () => {
                     ? 'bg-green-50 border-green-200 text-green-700' 
                     : (theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-400 hover:bg-gray-600' : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200')
                   }
+                  ${!userApiKey ? 'animate-pulse' : ''}
                 `}
               >
                 <Key size={14} />
@@ -700,13 +758,15 @@ const App: React.FC = () => {
                 <h2 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Reference & Configuration</h2>
               </div>
 
-              <ImageUploader 
-                currentImages={sourceImages} 
-                onImagesUpload={handleImagesUpload} 
-                onRemoveImage={handleRemoveImage}
-                onClearAll={handleClearAllImages}
-                theme={theme}
-              />
+              {activeTab === 'standard' && (
+                <ImageUploader 
+                  currentImages={sourceImages} 
+                  onImagesUpload={handleImagesUpload} 
+                  onRemoveImage={handleRemoveImage}
+                  onClearAll={handleClearAllImages}
+                  theme={theme}
+                />
+              )}
 
               {/* Control Bar: Analyze / Master Lighting / Generate */}
               {sourceImages.length > 0 && (
@@ -812,30 +872,7 @@ const App: React.FC = () => {
           <div className="space-y-8">
             {activeTab === 'special' && (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className={`mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border transition-colors ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200 shadow-sm'}`}>
-                  <div>
-                    <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Multi-Angle Artistic Collage</h3>
-                  </div>
-                  
-                  <div className="flex items-center gap-4">
-                    {/* Quality Selector for Special Tab */}
-                    <div className={`flex items-center rounded-xl px-4 py-2 border transition-colors ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200 shadow-sm'}`}>
-                      <span className={`mr-3 text-xs font-bold flex items-center gap-1.5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                        <Settings size={14} /> Resolution:
-                      </span>
-                      <select 
-                        value={resolution}
-                        onChange={(e) => setResolution(e.target.value as Resolution)}
-                        className={`bg-transparent text-sm font-bold outline-none cursor-pointer ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
-                      >
-                        <option value="1K">1K (Fast)</option>
-                        <option value="2K">2K (HD)</option>
-                        <option value="4K">4K (Ultra)</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
+                {/* Removed header section */}
                 <div className="space-y-12 w-full mx-auto">
                   {specialViews.map((view) => (
                     <div key={view.id} className={`flex flex-col lg:flex-row gap-6 items-start justify-center border-b pb-12 last:border-0 transition-colors ${theme === 'dark' ? 'border-gray-800' : 'border-gray-200'}`}>

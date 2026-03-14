@@ -162,74 +162,11 @@ export const VIEWS: ViewDefinition[] = [
     prompt: `Create an Architectural Junction Shot. Close-up on the intersection between geometric volumes or between two different materials to demonstrate the structural sophistication of the building. Photorealistic architectural detail. ${COMMON_CONSTRAINT}`
   },
   {
-    id: 22,
-    titleVI: "Chi Tiết Bóng Đổ",
-    titleEN: "Shadow & Pattern Detail",
-    description: "Hiệu ứng ánh sáng qua lam/cây (Light & shadow patterns).",
-    prompt: `Create a Shadow & Pattern Detail view. Focus on how light penetrates through louvers, railings, or tree canopies to form shadow patterns on the building's wall surfaces. High contrast, artistic lighting. ${COMMON_CONSTRAINT}`
-  },
-  {
-    id: 23,
-    titleVI: "Góc Nhìn Từ Ban Công",
-    titleEN: "POV from Balcony",
-    description: "Từ trong nhìn ra (View from inside out).",
-    prompt: `Create a POV from Balcony view. Position the camera from inside a balcony looking out, seeing part of the building's railing and greenery in the foreground, with the street context in the distance. Immersive perspective. ${COMMON_CONSTRAINT}`
-  },
-  {
-    id: 24,
-    titleVI: "Chi Tiết Ánh Sáng & Bóng Đổ Động",
-    titleEN: "Dynamic Light & Shadow",
-    description: "Mảng sáng tối ấn tượng qua lam/cửa (Dramatic interplay of light and shadow).",
-    prompt: `Create a Dynamic Light & Shadow Detail view. Focus on how afternoon sun (or early morning light) slants through louvers or window frames, creating impressive and dynamic patterns of light and dark on the architectural surface. High contrast, artistic composition. ${COMMON_CONSTRAINT}`
-  },
-  {
     id: 25,
     titleVI: "Chi Tiết Phản Chiếu Nước",
     titleEN: "Water Reflection Detail",
     description: "Phản chiếu kiến trúc lên mặt nước/kính (Reflection on water/glass).",
     prompt: `Create a Water Reflection Detail view. If there is a water feature or large reflective surface (glass) near the building, capture a close-up of the architecture reflecting onto that surface, creating a unique visual effect. If no water exists in reference, simulate a puddle or glass reflection. ${COMMON_CONSTRAINT}`
-  },
-  {
-    id: 26,
-    titleVI: "Chi Tiết Đường Nét & Kết Cấu",
-    titleEN: "Line & Texture Focus",
-    description: "Giao nhau đường nét và vật liệu (Intersection of lines & textures).",
-    prompt: `Create an Architectural Line & Texture Focus view. Close-up on the intersection of vertical and horizontal lines on the facade, along with the surface texture of main materials. Minimize distractions. Minimalist architectural photography. ${COMMON_CONSTRAINT}`
-  },
-  {
-    id: 27,
-    titleVI: "Chi Tiết Thang Bộ/Thang Máy",
-    titleEN: "Staircase/Elevator Detail",
-    description: "Cận cảnh thang ngoài trời (Outdoor staircase/elevator close-up).",
-    prompt: `Create a Staircase/Elevator Detail view. If the building has an outdoor staircase or elevator visible in the reference, capture a close-up highlighting its materials and structure. If not present, focus on the vertical circulation element or main structural column. ${COMMON_CONSTRAINT}`
-  },
-  {
-    id: 28,
-    titleVI: "Từ Trong Nhìn Ra Ban Công",
-    titleEN: "Interior-to-Balcony POV",
-    description: "Khung cảnh qua cửa lớn (View through large door).",
-    prompt: `Create an Interior-to-Balcony Perspective view. Shoot from an interior position, through a large door frame, looking out at the balcony. Include a small part of the interior as foreground, with the balcony and outside scenery as background, maintaining correct balcony structure. ${COMMON_CONSTRAINT}`
-  },
-  {
-    id: 29,
-    titleVI: "Từ Ban Công Nhìn Xuống",
-    titleEN: "Balcony Downward View",
-    description: "Khoe sân vườn/sân trước (Showcasing front yard/garden).",
-    prompt: `Create a Balcony Downward View. Shoot from the top floor balcony, pointing the lens down towards the front yard or garden below. Clarify how the building integrates with the green space and entrance. ${COMMON_CONSTRAINT}`
-  },
-  {
-    id: 30,
-    titleVI: "Từ Mái Nhìn Xuống Cổng",
-    titleEN: "Rooftop Gate View",
-    description: "Bố cục lối vào từ trên cao (Entrance layout from above).",
-    prompt: `Create a Rooftop Gate View. Place the camera high (from the roof or highest floor) looking straight down at the main gate and entrance area. Show the overall layout of the entry zone, including the fence and pathway. ${COMMON_CONSTRAINT}`
-  },
-  {
-    id: 31,
-    titleVI: "Cửa Sổ Khung Tranh",
-    titleEN: "Framed Window View",
-    description: "Khung cửa sổ như tranh (Window as a picture frame).",
-    prompt: `Create a Framed Window View. Shoot from inside a room, through a window frame. The window acts as a 'picture frame' surrounding the outside scene (e.g., street, opposite trees). Include a small part of the window frame as foreground to create depth. ${COMMON_CONSTRAINT}`
   },
   {
     id: 32,
@@ -298,15 +235,16 @@ export const MULTI_ANGLE_SUB_PROMPTS = [
 ];
 
 export const ARCHITECTURAL_ANGLES = [
+  { label: "Cận cảnh (Close-up)", value: "Close-up:" },
+  { label: "Đặc tả (Extreme Close-up)", value: "Extreme Close-up:" },
+  { label: "Góc cao / Góc chúc xuống (High Angle)", value: "High Angle:" },
+  { label: "Góc thấp / Góc hất lên (Low Angle)", value: "Low Angle:" },
+  { label: "Góc ngang tầm mắt (Eye-level Angle)", value: "Eye-level Angle:" },
+  { label: "Góc nghiêng (Dutch Angle)", value: "Dutch Angle / Canted Angle:" },
+  { label: "Góc nhìn của kiến (Worm's-eye view)", value: "Worm's-eye view:" },
+  { label: "Góc nhìn từ trên không (Bird's-eye view)", value: "Bird's-eye view / Top-down:" },
+  { label: "Góc Trực Diện (Frontal Angle)", value: "Frontal Angle:" },
   { label: "Toàn cảnh (Wide shot)", value: "Wide shot:" },
   { label: "Trung cảnh (Medium shot)", value: "Medium shot:" },
-  { label: "Cận cảnh (Close-up)", value: "Close-up:" },
-  { label: "Viễn cảnh (Extreme Long Shot)", value: "Extreme Long Shot:" },
-  { label: "Đặc tả (Extreme Close-up)", value: "Extreme Close-up:" },
-  { label: "Góc ngang tầm mắt (Eye-level Angle)", value: "Eye-level Angle:" },
-  { label: "Góc thấp / Góc hất lên (Low Angle)", value: "Low Angle:" },
-  { label: "Góc cao / Góc chúc xuống (High Angle)", value: "High Angle:" },
-  { label: "Góc nhìn từ trên không (Bird's-eye view)", value: "Bird's-eye view / Top-down:" },
-  { label: "Góc nhìn của kiến (Worm's-eye view)", value: "Worm's-eye view:" },
-  { label: "Góc nghiêng (Dutch Angle)", value: "Dutch Angle / Canted Angle:" }
+  { label: "Viễn cảnh (Extreme Long Shot)", value: "Extreme Long Shot:" }
 ];

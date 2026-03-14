@@ -20,8 +20,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ currentImages, onI
   }, []);
 
   const handleContainerClick = useCallback((e: React.MouseEvent) => {
-    // Trigger upload on click anywhere in the container
-    triggerUpload();
+    // Trigger upload if clicking the container or images, but NOT the remove button
+    if (!(e.target as HTMLElement).closest('button')) {
+      triggerUpload();
+    }
   }, [triggerUpload]);
 
   const processFiles = useCallback((files: FileList | File[]) => {

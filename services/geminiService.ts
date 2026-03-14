@@ -60,9 +60,9 @@ export const analyzeArchitecturalStyle = async (base64Images: string[], apiKey?:
   `;
 
   try {
-    // Using gemini-1.5-flash-latest for analysis as it's more stable across key tiers
+    // Using gemini-3.1-pro-preview for analysis
     const response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash-latest',
+      model: 'gemini-3.1-pro-preview',
       contents: {
         parts: [
           { text: prompt },
@@ -131,14 +131,11 @@ export const generateArchitecturalView = async (
 
   // Determine model and config based on resolution or user selection
   const isHighRes = resolution === '2K' || resolution === '4K';
-  let model = selectedModel || (isHighRes ? '3.1' : '2.5');
+  let model = selectedModel || 'pro';
   
   // Map aliases to actual model names
-  let actualModel = 'gemini-2.5-flash-image';
-  if (model === '3.1' || model === 'fast') actualModel = 'gemini-3.1-flash-image-preview';
-  if (model === '3.2') actualModel = 'gemini-3.2-flash-image-preview';
-  if (model === 'pro') actualModel = 'gemini-3-pro-image-preview';
-  if (model === '2.5' || model === 'banana-free') actualModel = 'gemini-2.5-flash-image';
+  let actualModel = 'gemini-3.1-pro-preview';
+  if (model === 'gemini-3-pro') actualModel = 'gemini-3.1-pro-preview';
 
   // Configuration for the model
   const config: any = {

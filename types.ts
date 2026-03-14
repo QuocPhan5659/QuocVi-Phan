@@ -18,12 +18,9 @@ export interface GeneratedImage {
 export type Resolution = '1K' | '2K' | '4K';
 
 export type ModelType = 
-  | '2.5'
-  | '3.1'
-  | '3.2'
+  | 'gemini-3-pro'
   | 'banana-free'
-  | 'fast'
-  | 'pro';
+  | 'fast';
 
 export type AspectRatio = '1:1' | '16:9' | '9:16' | '4:3' | '3:4' | '3:2' | '2:3' | 'random';
 
